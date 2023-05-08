@@ -10,14 +10,7 @@ GEN_OPTS__FLAG :=
 GEN_CMDS__FLAG := 
 
 ORDERED_OBJS += \
-"./csHFXT.obj" \
-"./lcd.obj" \
 "./main.obj" \
-"./startup_msp432p4111_ccs.obj" \
-"./sysTickDelays.obj" \
-"./system_msp432p4111.obj" \
-"./terminal.obj" \
-"../msp432p4111.cmd" \
 $(GEN_CMDS__FLAG) \
 -llibc.a \
 
@@ -126,29 +119,29 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-ece230Project5.out \
+ece230FinalProject.out \
 
 EXE_OUTPUTS__QUOTED += \
-"ece230Project5.out" \
+"ece230FinalProject.out" \
 
 
 # All Target
-all: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "ece230Project5.out"
+all: $(OBJS) $(GEN_CMDS)
+	@$(MAKE) --no-print-directory -Onone "ece230FinalProject.out"
 
 # Tool invocations
-ece230Project5.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+ece230FinalProject.out: $(OBJS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --advice:power=all --define=__MSP432P4111__ --define=ccs -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"ece230Project5.map" --heap_size=1024 --stack_size=512 -i"C:/ti/ccs1220/ccs/ccs_base/arm/include" -i"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib" -i"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="ece230Project5_linkInfo.xml" --rom_model -o "ece230Project5.out" $(ORDERED_OBJS)
+	"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --advice:power=all --define=__MSP432P4111__ --define=ccs -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"ece230FinalProject.map" --heap_size=1024 --stack_size=512 -i"C:/ti/ccs1220/ccs/ccs_base/arm/include" -i"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/lib" -i"C:/ti/ccs1220/ccs/tools/compiler/ti-cgt-arm_20.2.7.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="ece230FinalProject_linkInfo.xml" --rom_model -o "ece230FinalProject.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)
-	-$(RM) "csHFXT.obj" "lcd.obj" "main.obj" "startup_msp432p4111_ccs.obj" "sysTickDelays.obj" "system_msp432p4111.obj" "terminal.obj" 
-	-$(RM) "csHFXT.d" "lcd.d" "main.d" "startup_msp432p4111_ccs.d" "sysTickDelays.d" "system_msp432p4111.d" "terminal.d" 
+	-$(RM) "main.obj" 
+	-$(RM) "main.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

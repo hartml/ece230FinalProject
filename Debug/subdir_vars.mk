@@ -5,61 +5,22 @@
 SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
-CMD_SRCS += \
-../msp432p4111.cmd 
-
 C_SRCS += \
-../csHFXT.c \
-../lcd.c \
-../main.c \
-../startup_msp432p4111_ccs.c \
-../sysTickDelays.c \
-../system_msp432p4111.c \
-../terminal.c 
+../main.c 
 
 C_DEPS += \
-./csHFXT.d \
-./lcd.d \
-./main.d \
-./startup_msp432p4111_ccs.d \
-./sysTickDelays.d \
-./system_msp432p4111.d \
-./terminal.d 
+./main.d 
 
 OBJS += \
-./csHFXT.obj \
-./lcd.obj \
-./main.obj \
-./startup_msp432p4111_ccs.obj \
-./sysTickDelays.obj \
-./system_msp432p4111.obj \
-./terminal.obj 
+./main.obj 
 
 OBJS__QUOTED += \
-"csHFXT.obj" \
-"lcd.obj" \
-"main.obj" \
-"startup_msp432p4111_ccs.obj" \
-"sysTickDelays.obj" \
-"system_msp432p4111.obj" \
-"terminal.obj" 
+"main.obj" 
 
 C_DEPS__QUOTED += \
-"csHFXT.d" \
-"lcd.d" \
-"main.d" \
-"startup_msp432p4111_ccs.d" \
-"sysTickDelays.d" \
-"system_msp432p4111.d" \
-"terminal.d" 
+"main.d" 
 
 C_SRCS__QUOTED += \
-"../csHFXT.c" \
-"../lcd.c" \
-"../main.c" \
-"../startup_msp432p4111_ccs.c" \
-"../sysTickDelays.c" \
-"../system_msp432p4111.c" \
-"../terminal.c" 
+"../main.c" 
 
 
