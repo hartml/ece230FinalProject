@@ -26,10 +26,12 @@ extern "C"
 
 #include "msp.h"
 
-// TODO add tick count values for constants
-#define SERVO_TMR_PERIOD                7500        // ticks for 50Hz signal
-#define SERVO_MIN_ANGLE                 281         // ticks for 0.75ms pulse
-#define SERVO_MAX_ANGLE                 844         // ticks for 2.25ms pulse
+// DONE add tick count values for constants
+#define SERVO_TMR_PERIOD                60000        // ticks for 40Hz signal
+#define SERVO_MIN_ANGLE                 1800        // ticks for 0.75ms pulse
+#define SERVO_MAX_ANGLE                 5400        // ticks for 2.25ms pulse
+#define TEN_DEGREE_TICKS                200        // ticks 10 degree shift
+#define ONE_DEGREE_TICKS                20         //ticks 1 degree shift
 
 
 /*!
@@ -70,7 +72,7 @@ extern void incrementTenDegree(void);
  *
  * \return None
  */
-extern void setServoAngle(int8_t angle);
+extern void setServoAngle(uint8_t angle);
 
 
 //*****************************************************************************
