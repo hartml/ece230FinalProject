@@ -25,6 +25,8 @@ extern "C"
 #endif
 
 #include "msp.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #define STEPPER_PORT                    P2
 #define STEPPER_MASK                    (0x00F0)
@@ -33,10 +35,9 @@ extern "C"
 #define STEPPER_IN3                     (0x0020)
 #define STEPPER_IN4                     (0x0010)
 
-// TODO set initial step timer period for 10 RPM (based on 375KHz clock rate)
-#define MIN_PERIOD                     5493
-#define MAX_PERIOD                     549
-#define STEP_SEQ_CNT                   8
+// DONE set initial step timer period for 10 RPM (based on 4MHz clock rate)
+#define INIT_PERIOD                     11719
+#define STEP_SEQ_CNT                    8
 
 /*!
  * \brief This function configures pins and timer for stepper motor driver
@@ -90,6 +91,7 @@ void disableStepperMotor(void);
  */
 extern void stepClockwise(void);
 
+extern void setRPM(bool goReverse, uint16_t rpm);
 
 /*!
  * \brief This increments step counter-clockwise
