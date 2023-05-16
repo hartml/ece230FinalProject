@@ -80,7 +80,7 @@ void configHFXT(void)
                 | CS_CTL1_SELM__HFXTCLK         // select MCLK source HFXTCLK
                 | CS_CTL1_SELS__HFXTCLK         // select SMCLK source HFXTCLK
                 | CS_CTL1_DIVM__1               // set MCLK divider /1
-                | CS_CTL1_DIVS__2;              // set SMCLK divider /2
+                | CS_CTL1_DIVS__1;              // set SMCLK divider /1
 
     CS->KEY = 0;                        // Lock CS module from unintended accesses
 

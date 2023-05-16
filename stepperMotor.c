@@ -26,9 +26,13 @@ void initStepperMotor(void) {
     STEPPER_PORT->SEL0 = (STEPPER_PORT->SEL0) & ~STEPPER_MASK;
     STEPPER_PORT->SEL1 = (STEPPER_PORT->SEL1) & ~STEPPER_MASK;
     STEPPER_PORT->DIR = (STEPPER_PORT->DIR) | STEPPER_MASK;
+    STEPPER_PORT2->SEL0 = (STEPPER_PORT->SEL0) & ~STEPPER_MASK;
+    STEPPER_PORT2->SEL1 = (STEPPER_PORT->SEL1) & ~STEPPER_MASK;
+    STEPPER_PORT2->DIR = (STEPPER_PORT->DIR) | STEPPER_MASK;
 
     // initialize stepper outputs to LOW
     STEPPER_PORT->OUT = (STEPPER_PORT->OUT) & ~STEPPER_MASK;
+    STEPPER_PORT2->OUT = (STEPPER_PORT->OUT) & ~STEPPER_MASK;
 
     /* Configure Timer_A3 and CCR0 */
     // Set period of Timer_A3 in CCR0 register for Up Mode
@@ -64,11 +68,13 @@ void disableStepperMotor(void) {
 void stepClockwise(void) {
     currentStep = (currentStep + 1) % STEP_SEQ_CNT;  // increment to next step position
     STEPPER_PORT->OUT = (STEPPER_PORT->OUT & ~(0x00F0)) | (stepperSequence[currentStep] << 4);
+    STEPPER_PORT2->OUT = (STEPPER_PORT->OUT & ~(0x00F0)) | (stepperSequence[currentStep] << 4);
 }
 
 void stepCounterClockwise(void) {
     currentStep = ((uint8_t)(currentStep - 1)) % STEP_SEQ_CNT;  // decrement to previous step position (counter-clockwise)
     STEPPER_PORT->OUT = (STEPPER_PORT->OUT & ~(0x00F0)) | (stepperSequence[currentStep] << 4);
+    STEPPER_PORT2->OUT = (STEPPER_PORT->OUT & ~(0x00F0)) | (stepperSequence[currentStep] << 4);
 }
 
 void setRPM(bool goReverse, uint16_t rpm100x) {

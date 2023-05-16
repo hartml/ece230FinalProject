@@ -1,57 +1,94 @@
-/*! \file */
-/*!
- * servoDriver.c
+/*
+ * IRReceiver.c
  *
- * Description: Servo motor driver for MSP432P4111 Launchpad.
- *              Assumes SMCLK configured with 48MHz HFXT as source.
- *              Uses Timer_A2 and P5.6 (TA2.1)
- *
- *  Created on:
- *      Author:
+ *  Created on: May 15, 2023
+ *      Author: teaneyje
  */
 
-#include "servoDriver.h"
+#include <stdbool.h>
+#include <math.h>
 #include "msp.h"
 
-/* Global Variables  */
-uint16_t pulseWidthTicks = SERVO_MIN_ANGLE;
+#define PinInPort   P2
+#define PinInBit    BIT4
+#define OneMaxTime 2 //ms
+#define OneMinTime 1 //ms
+#define OneMaxTicks = 12000
+#define OneMinTicks = 6000
 
+bool ReadLastPressed = true;
+char LastPressed = '\0';
+uint16_t StartingTick = 0;
+uint16_t EndingTick = 0;
+bool ReadingArray[32];
 
-void initServoMotor(void) {
-    // DONE configure servo pin (P5.6) for primary module function (TA2.1),
-    //  output, initially LOW
-    P5->SEL0 |= BIT6;
-    P5->SEL1 &= ~BIT6;
-    P5->OUT &= ~BIT6;
-    P5->DIR |= BIT6;
+void InitializeIRReceiver() {
+    TIMER_A0->CTL = 0x02E4; //0b xxxx xx10 1110 x10x //Setting Timer A0 to have 1:8 pre-scale with SMCLK as source on continuous mode, no interrupts
 
+    PinInPort->DIR &= ~(PinInBit); //Configuring (PinInPort).(PinInBit) as secondary function input with pull-down resistor
+    PinInPort->SEL1 &= ~(PinInBit);
+    PinInPort->SEL0 |= BIT4;
+    PinInPort->REN &= ~BIT4;
 
-    /* Configure Timer_A2 and CCR1 */
-    // Set period of Timer_A2 in CCR0 register for Up Mode
-    TIMER_A2->CCR[0] = SERVO_TMR_PERIOD;
-    // Set initial positive pulse-width of PWM in CCR1 register
-    TIMER_A2->CCR[1] = SERVO_MIN_ANGLE;
+    TIMER_A0->CCTL[1] = 0xC110; //0b 1100 0xx1 xxx1 xxxx //Setting CCR1 to be capture on rising and falling with interrupts enabled
 
-    // DONE configure TA2CCR1 for Compare mode, Reset/Set output mode, with interrupt disabled
-    TIMER_A2->CCTL[1] = 0x08E0; //0b 00xx 1xx0 1110 x000 = 0x08E0
-    // Configure Timer_A2 in Up Mode, with source SMCLK, prescale 8:1, and
-    //  interrupt disabled  -  tick rate will be 1MHz (for SMCLK = 48MHz)
-    // DONE configure Timer_A2 (requires setting control AND expansion register)
-    TIMER_A2->CTL = 0x0294; // 0b xxxx xx10 1001 x100 = 0x0294
-    TIMER_A2->EX0 |= 0x0004; //0b0100 = 0x0004 //So a total of 1:8:5 (1:40) pre-scale now
+    NVIC_EnableIRQ(TA0_N_IRQn);
+    __enable_irq();                             // Enable global interrupt
 }
 
-void incrementTenDegree(void) {
-    // update pulse-width for <current angle> + <10 degrees>
-    pulseWidthTicks += TEN_DEGREE_TICKS;
-    if (pulseWidthTicks > SERVO_MAX_ANGLE) {
-        pulseWidthTicks = SERVO_MIN_ANGLE;
+char getLastPressed() {
+    if(!ReadLastPressed) {
+        ReadLastPressed = true;
+        return LastPressed;
     }
-    // DONE update CCR1 register to set new positive pulse-width
-    TIMER_A2->CCR[1] = pulseWidthTicks;
+    return '\0';
 }
 
-void setServoAngle(uint8_t angle) {
-    // NOT NEEDED FOR EXERCISE - but would be useful function for driver
-    TIMER_A2->CCR[1] = SERVO_MIN_ANGLE + (angle * ONE_DEGREE_TICKS);
+void handleDecodingProcess() {
+    int tmp = 0;
+    int i = 0;
+    for(i = 16; i < 23; i++) { //Looking at [16, 23) since these are the data bits
+        if(ReadingArray[i]) {
+            int j = i - 16;
+            tmp += powf(2, j);
+        }
+    }
+    LastPressed = tmp;
+}
+
+void handleNewBit() {
+    uint16_t ticks = EndingTick - StartingTick;
+    static uint16_t index = 31;
+    int i = 0;
+    if(ticks > 12000) { //The pulse was the starting sequence. So we need to start overwriting our current reading resister
+        for(i = 0; i < 32; i++ ) {
+            ReadingArray[i] = false;
+        }
+        index = 0;
+    } else if(ticks < 6000) { //The pulse was a 0
+        //Add a 0 to the reading array
+        ReadingArray[i] = false;
+    } else { //The pulse was a 1
+        //Add 1 to the reading register
+        ReadingArray[i] = true;
+    }
+
+    if(index == 0) {
+        handleDecodingProcess();
+        ReadLastPressed = false;
+    }
+    index--;
+}
+
+void TA0_N_IRQHandler() {
+    //If the input pin is a 1 (so a rising triggered this interrupt), we need to start counting. So set Starting tick to be TA0R
+    //Else, this was a falling edge that caused this interrupt, so we need to stop counting (set the ending tick to be TA0R), and calculate if it was a 0, 1, or one of the starting bits
+    if(PinInPort->IN & BIT4 == BIT4) { //The input is a 1
+        TIMER_A0->R = 0; //Resetting it, so we don't get an overflow issue or anything while reading the signal
+        StartingTick = 0;
+    } else {
+        EndingTick = TIMER_A0->R;
+        handleNewBit();
+    }
+    TIMER_A0->CCTL[1] &= ~(BIT1 | BIT2);
 }
