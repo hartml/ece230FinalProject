@@ -90,5 +90,5 @@ void TA0_N_IRQHandler() {
         EndingTick = TIMER_A0->R;
         handleNewBit();
     }
-    TIMER_A0->CCTL[1] &= ~(BIT1 | BIT2);
+    TIMER_A0->CCTL[1] &= ~(BIT1 | BIT);
 }
