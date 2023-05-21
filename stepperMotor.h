@@ -29,12 +29,11 @@ extern "C"
 #include <stdbool.h>
 
 #define STEPPER_PORT                    P4
-#define STEPPER_MASK                    (0x00F0)
-#define STEPPER_IN1                     (0x0080)
-#define STEPPER_IN2                     (0x0040)
-#define STEPPER_IN3                     (0x0020)
-#define STEPPER_IN4                     (0x0010)
-#define STEPPER_PORT2                   P2
+#define STEPPER_MASK                    (0x000F)
+#define STEPPER_IN1                     (0x0008)
+#define STEPPER_IN2                     (0x0004)
+#define STEPPER_IN3                     (0x0002)
+#define STEPPER_IN4                     (0x0001)
 
 // DONE set initial step timer period for 10 RPM (based on 4MHz clock rate)
 #define INIT_PERIOD                     11719
