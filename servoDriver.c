@@ -53,5 +53,11 @@ void incrementTenDegree(void) {
 
 void setServoAngle(uint8_t angle) {
     // NOT NEEDED FOR EXERCISE - but would be useful function for driver
+    if(angle < 2100){ // if angle less than 70 degrees activate left turn signal
+        RGBLED_toggleRed();
+        }
+    if(angle > 3300){  // if angle greater than 110 degrees activate right turn signal
+        RGBLED_toggleBlue();
+    }
     TIMER_A2->CCR[1] = SERVO_MIN_ANGLE + (angle * ONE_DEGREE_TICKS);
 }

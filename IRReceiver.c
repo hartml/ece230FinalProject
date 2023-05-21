@@ -123,5 +123,5 @@ void OnFalling() {
 
 void TA0_N_IRQHandler() {
     OnFalling();
-    TIMER_A0->CCTL[1] &= ~(BIT0);
+    TIMER_A0->CCTL[1] &= ~(BIT1 | BIT2);
 }
